@@ -33,7 +33,7 @@ class DatabaseService {
             $_colName TEXT,
             $_colDate TEXT,
             $_colPriorityLevel TEXT,
-            $_colCompleted INTEGER,
+            $_colCompleted INTEGER
           )
         ''');
       },
