@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sqlite_todo/models/todo_model.dart';
+import '../models/todo_model.dart';
 
 class TodosOverview extends StatelessWidget {
   final List<Todo> todos;

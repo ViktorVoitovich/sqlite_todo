@@ -1,9 +1,9 @@
 import 'package:enum_to_string/enum_to_string.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:sqlite_todo/models/todo_model.dart';
-import 'package:sqlite_todo/extensions/string_extension.dart';
-import 'package:sqlite_todo/services/database_service.dart';
+import '../models/todo_model.dart';
+import '../extensions/string_extension.dart';
+import '../services/database_service.dart';
 
 class TodoTile extends StatelessWidget {
   final Todo todo;

@@ -1,6 +1,6 @@
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:sqlite_todo/models/todo_model.dart';
+import '../models/todo_model.dart';
 
 class DatabaseService {
   static DatabaseService instance = DatabaseService._();

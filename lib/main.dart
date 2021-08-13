@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sqlite_todo/screens/todo_list_screen.dart';
+import 'screens/todo_list_screen.dart';
 
 void main() {
   runApp(MyApp());

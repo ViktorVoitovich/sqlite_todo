@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:sqlite_todo/models/todo_model.dart';
-import 'package:sqlite_todo/services/database_service.dart';
-import 'package:sqlite_todo/widgets/todo_tile.dart';
-import 'package:sqlite_todo/widgets/todos_overview.dart';
+import '../models/todo_model.dart';
+import 'add_todo_screen.dart';
+import '../services/database_service.dart';
+import '../widgets/todo_tile.dart';
+import '../widgets/todos_overview.dart';
 
 class TodoListScreen extends StatefulWidget {
   const TodoListScreen({Key? key}) : super(key: key);
@@ -37,11 +38,27 @@ class _TodoListScreenState extends State<TodoListScreen> {
             if (index == 0) {
               return TodosOverview(todos: _todos);
             }
-            return TodoTile(todo: _todos[index - 1]);
+            final todo = Todo(
+              id: 0,
+              name: 'Eat food',
+              date: DateTime.now(),
+              priorityLevel: PriorityLevel.low,
+              completed: false,
+            );
+            return TodoTile(todo: todo);
           },
           separatorBuilder: (_, __) => const Divider(),
           itemCount: 3, // _todos.length + 1,
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => Navigator.of(context).push(
+          MaterialPageRoute(
+            fullscreenDialog: true,
+            builder: (_) => AddtodoScreen(),
+          ),
+        ),
+        child: const Icon(Icons.add),
       ),
     );
   }
