@@ -1,11 +1,19 @@
 import 'package:enum_to_string/enum_to_string.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import '../services/database_service.dart';
 import '../models/todo_model.dart';
 import '../extensions/string_extension.dart';
 
 class AddtodoScreen extends StatefulWidget {
-  const AddtodoScreen({Key? key}) : super(key: key);
+  final VoidCallback updateTodos;
+  final Todo? todo;
+
+  const AddtodoScreen({
+    required this.updateTodos,
+    this.todo,
+    Key? key,
+  }) : super(key: key);
 
   @override
   _AddtodoScreenState createState() => _AddtodoScreenState();
@@ -22,25 +30,66 @@ class _AddtodoScreenState extends State<AddtodoScreen> {
   void initState() {
     super.initState();
 
-    _todo = Todo(
-      name: '',
-      date: DateTime.now(),
-      priorityLevel: PriorityLevel.medium,
-      completed: false,
-    );
+    if (_isEditing) {
+      _todo = widget.todo;
+    } else {
+      _todo = Todo(
+        name: '',
+        date: DateTime.now(),
+        priorityLevel: PriorityLevel.medium,
+        completed: false,
+      );
+    }
 
     _nameController = TextEditingController(text: _todo!.name);
     _dateController =
         TextEditingController(text: DateFormat.MMMMEEEEd().format(_todo!.date));
   }
 
-  void _handleDatePicker() {}
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _dateController.dispose();
+    super.dispose();
+  }
+
+  bool get _isEditing => widget.todo != null;
+
+  Future<void> _handleDatePicker() async {
+    final date = await showDatePicker(
+      context: context,
+      initialDate: _todo!.date,
+      firstDate: DateTime.now().subtract(const Duration(days: 365)),
+      lastDate: DateTime.now().add(const Duration(days: 365)),
+    );
+
+    if (date != null) {
+      _dateController.text = DateFormat.MMMMEEEEd().format(date);
+      setState(() {
+        _todo = _todo!.copyWith(date: date);
+      });
+    }
+  }
+
+  void _submit() {
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+
+      if (!_isEditing) {
+        DatabaseService.instance.insert(_todo!);
+      } else {
+        DatabaseService.instance.update(_todo!);
+      }
+      widget.updateTodos();
+      Navigator.of(context).pop();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add Todo'),
+        title: _isEditing ? const Text('Update Todo') : const Text('Add Todo'),
       ),
       body: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
@@ -96,22 +145,44 @@ class _AddtodoScreenState extends State<AddtodoScreen> {
                 ),
                 const SizedBox(height: 32.0),
                 ElevatedButton(
-                  onPressed: () {},
+                  onPressed: _submit,
                   style: ElevatedButton.styleFrom(
-                    primary: Colors.green,
+                    primary: _isEditing ? Colors.orange : Colors.green,
                     minimumSize: const Size.fromHeight(45.0),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20.0),
                     ),
                   ),
                   child: Text(
-                    'Add',
+                    _isEditing ? 'Save' : 'Add',
                     style: TextStyle(
                       fontSize: 16.0,
                       color: Colors.white,
                     ),
                   ),
                 ),
+                SizedBox(height: 20.0),
+                if (_isEditing)
+                  ElevatedButton(
+                    onPressed: () {
+                      DatabaseService.instance.delete(_todo!.id!);
+                      widget.updateTodos();
+                      Navigator.of(context).pop();
+                    },
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: const Size.fromHeight(45.0),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20.0),
+                      ),
+                    ),
+                    child: const Text(
+                      'Delete',
+                      style: TextStyle(
+                        fontSize: 16.0,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
               ],
             ),
           ),

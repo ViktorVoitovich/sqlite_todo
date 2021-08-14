@@ -23,6 +23,7 @@ class Todo {
 
   factory Todo.fromMap(Map<String, dynamic> map) {
     return Todo(
+      id: map['id'] as int,
       name: map['name'] as String,
       date: DateTime.parse(map['date'] as String),
       priorityLevel: EnumToString.fromString(

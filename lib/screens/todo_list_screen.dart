@@ -38,24 +38,20 @@ class _TodoListScreenState extends State<TodoListScreen> {
             if (index == 0) {
               return TodosOverview(todos: _todos);
             }
-            final todo = Todo(
-              id: 0,
-              name: 'Eat food',
-              date: DateTime.now(),
-              priorityLevel: PriorityLevel.low,
-              completed: false,
+            return TodoTile(
+              todo: _todos[index - 1],
+              updateTodos: _getTodos,
             );
-            return TodoTile(todo: todo);
           },
           separatorBuilder: (_, __) => const Divider(),
-          itemCount: 3, // _todos.length + 1,
+          itemCount: _todos.length + 1, // _todos.length + 1,
         ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => Navigator.of(context).push(
           MaterialPageRoute(
             fullscreenDialog: true,
-            builder: (_) => AddtodoScreen(),
+            builder: (_) => AddtodoScreen(updateTodos: _getTodos),
           ),
         ),
         child: const Icon(Icons.add),

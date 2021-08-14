@@ -1,14 +1,16 @@
 import 'package:enum_to_string/enum_to_string.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import '../screens/add_todo_screen.dart';
 import '../models/todo_model.dart';
 import '../extensions/string_extension.dart';
 import '../services/database_service.dart';
 
 class TodoTile extends StatelessWidget {
+  final VoidCallback updateTodos;
   final Todo todo;
 
-  const TodoTile({required this.todo});
+  const TodoTile({required this.todo, required this.updateTodos});
 
   Color _getColor() {
     switch (todo.priorityLevel) {
@@ -27,6 +29,18 @@ class TodoTile extends StatelessWidget {
         !todo.completed ? TextDecoration.none : TextDecoration.lineThrough;
 
     return ListTile(
+      key: Key(todo.id.toString()),
+      onTap: () {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+              fullscreenDialog: true,
+              builder: (_) => AddtodoScreen(
+                updateTodos: updateTodos,
+                todo: todo,
+              ),
+            ));
+      },
       title: Text(
         todo.name,
         style: TextStyle(
@@ -72,6 +86,7 @@ class TodoTile extends StatelessWidget {
         activeColor: _getColor(),
         onChanged: (value) {
           DatabaseService.instance.update(todo.copyWith(completed: value));
+          updateTodos();
         },
       ),
     );
